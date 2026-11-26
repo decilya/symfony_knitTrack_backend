@@ -1,0 +1,21 @@
+services:
+  localstack:
+    image: localstack/localstack:latest
+    profiles: ["storage"]
+    ports: ["4566:4566"]
+    environment:
+      SERVICES: s3
+      DEFAULT_REGION: us-east-1
+    volumes:
+      - ./docker/localstack/init.sh:/etc/localstack/init/ready.d/init.sh:ro
+      - localstackdata:/var/lib/localstack
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks: [knittrack]
+
+volumes:
+  localstackdata:

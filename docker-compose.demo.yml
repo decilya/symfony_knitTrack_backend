@@ -1,0 +1,52 @@
+services:
+  tempo:
+    image: grafana/tempo:latest
+    command: ["-config.file=/etc/tempo.yaml"]
+    volumes:
+      - ./docker/observability/tempo.yaml:/etc/tempo.yaml:ro
+      - tempodata:/tmp/tempo
+    ports: ["3200:3200", "4318:4318"]
+    networks: [knittrack]
+
+  loki:
+    image: grafana/loki:latest
+    command: ["-config.file=/etc/loki/local-config.yaml"]
+    volumes:
+      - ./docker/observability/loki-config.yaml:/etc/loki/local-config.yaml:ro
+      - lokidata:/loki
+    ports: ["3100:3100"]
+    networks: [knittrack]
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./docker/observability/prometheus.yaml:/etc/prometheus/prometheus.yml:ro
+      - prometheusdata:/prometheus
+    ports: ["9090:9090"]
+    networks: [knittrack]
+
+  kafka-exporter:
+    image: danielqsj/kafka-exporter:latest
+    command: ["--kafka.server=kafka:9092"]
+    ports: ["9308:9308"]
+    depends_on:
+      kafka: { condition: service_healthy }
+    networks: [knittrack]
+
+  grafana:
+    image: grafana/grafana:latest
+    ports: ["3000:3000"]
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: knittrack
+    volumes:
+      - grafanadata:/var/lib/grafana
+      - ./docker/observability/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./docker/observability/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    depends_on: [tempo, loki, prometheus]
+    networks: [knittrack]
+
+volumes:
+  tempodata:
+  lokidata:
+  prometheusdata:
+  grafanadata:

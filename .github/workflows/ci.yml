@@ -1,0 +1,31 @@
+name: CI
+on:
+  push: { branches: [main] }
+  pull_request: { branches: [main] }
+jobs:
+  static-analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with: { php-version: '8.4', extensions: rdkafka, pdo_pgsql, intl, coverage: none }
+      - run: composer install --no-interaction --prefer-dist
+      - run: vendor/bin/phpstan analyse --level=max
+      - run: vendor/bin/php-cs-fixer fix --dry-run --diff
+      - run: vendor/bin/deptrac analyse
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with: { php-version: '8.4', extensions: rdkafka, pdo_pgsql, intl, coverage: pcov }
+      - run: composer install --no-interaction --prefer-dist
+      - run: vendor/bin/phpunit --coverage-clover=coverage.xml
+      - run: vendor/bin/infection --min-msi=85
+  openapi:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oasdiff/oasdiff-action@v1
+        with: { base: docs/api/openapi.baseline.yaml, revision: docs/api/openapi.yaml, fail-on: ERR }

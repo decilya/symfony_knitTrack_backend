@@ -1,0 +1,39 @@
+/.php-cs-fixer.cache
+/.phpunit.result.cache
+/infection.log
+/coverage.xml
+
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+###> friendsofphp/php-cs-fixer ###
+/.php-cs-fixer.php
+/.php-cs-fixer.cache
+###< friendsofphp/php-cs-fixer ###
+
+###> phpstan/phpstan ###
+phpstan.neon
+###< phpstan/phpstan ###
+
+###> phpunit/phpunit ###
+/phpunit.xml
+/.phpunit.cache/
+###< phpunit/phpunit ###
+
+###> qossmic/deptrac ###
+/.deptrac.cache
+###< qossmic/deptrac ###
+
+/vendor/
+/var/
+.env.local
+.php-cs-fixer.cache
+.phpunit.result.cache
+

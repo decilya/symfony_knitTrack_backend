@@ -1,0 +1,20 @@
+deptrac:
+  paths:
+    - ./src
+  layers:
+    - name: Domain
+      collectors: [{ type: className, regex: ^App\\(Auth|Sync|Projects|Notification)\\Domain\\.* }]
+    - name: Application
+      collectors: [{ type: className, regex: ^App\\(Auth|Sync|Projects|Notification)\\Application\\.* }]
+    - name: Infrastructure
+      collectors: [{ type: className, regex: ^App\\(Auth|Sync|Projects|Notification|Shared)\\Infrastructure\\.* }]
+    - name: Presentation
+      collectors: [{ type: className, regex: ^App\\(Auth|Sync|Projects|Notification)\\Presentation\\.* }]
+    - name: Shared
+      collectors: [{ type: className, regex: ^App\\Shared\\Domain\\.* }]
+  ruleset:
+    Domain: [Shared]
+    Application: [Domain, Shared]
+    Infrastructure: [Domain, Application, Shared]
+    Presentation: [Application, Shared]
+    Shared: ~
